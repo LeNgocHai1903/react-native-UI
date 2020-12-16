@@ -1,0 +1,1 @@
+export const baseUrl = 'https://react-native-bar.herokuapp.com/';
