@@ -8,13 +8,14 @@ const mapStateToProps = (state) => {
     products: state.products,
     comments: state.comments,
     favorites: state.favorites,
+    login: state.login
   };
 };
 
 const mapDispatchToProps = (dispatch) => ({
   postFavorite: (productId) => dispatch(postFavorite(productId)),
   postComment: (productId, rating, author, comment) =>
-    dispatch(postComment(productId, rating, author, comment)),
+  dispatch(postComment(productId, rating, author, comment)),
 });
 
 import React, { Component } from "react";
@@ -33,7 +34,7 @@ import {
   Alert,
   
 } from "react-native";
-import { Card, Image, Icon, Input, Rating } from "react-native-elements";
+import { Card, Image, Icon, Input, Rating, Label } from "react-native-elements";
 import { baseUrl } from "../shared/baseUrl";
 
 class RenderDish extends Component {
@@ -51,11 +52,11 @@ class RenderDish extends Component {
       onPanResponderEnd: (e, gestureState) => {
         if (recognizeDrag(gestureState)) {
           Alert.alert(
-            'Add Favorite',
+            'Add To Your Cart',
             'Are you sure you wish to add ' + product.name + ' to your card?',
             [
               { text: 'Cancel', onPress: () => { /* nothing */ } },
-              { text: 'OK', onPress: () => { this.props.favorite ? alert('Already favorite') : this.props.onPress() } },
+              { text: 'OK', onPress: () => { this.props.favorite ? alert('Already in your card') : this.props.onPress() } },
             ],
             { cancelable: false }
           );
@@ -91,8 +92,11 @@ class RenderDish extends Component {
               name={this.props.favorite ? "shopping-cart" : "shopping-cart"}
               type="font-awesome"
               color="#f50"
-              onPress={() =>
-                this.props.favorite ? alert("Already favorite") : this.props.onPress()
+              onPress={() => {
+                this.props.login ? (
+                this.props.favorite ? alert("Already in your Card") : this.props.onPress()) : (alert("Please login before using this service"))
+
+              }
               }
             />
             <Icon
@@ -146,7 +150,7 @@ class Dishdetail extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      rating: null,
+      rating: 5,
       author: "",
       comment: "",
       showModal: false,
@@ -165,6 +169,7 @@ class Dishdetail extends Component {
           <RenderDish
             product={this.props.products.products[productId]}
             favorite={this.props.favorites.some((el) => el === productId)}
+            login = {this.props.login.isLoggedIn}
             onPress={() => this.markFavorite(productId)}
             onPressAddComment={this.toggleModal}
           />
@@ -193,6 +198,8 @@ class Dishdetail extends Component {
                 style={{ paddingVertical: 10 }}
               />
               <View style={styles.SectionStyle}>
+                {this.props.login.isLoggedIn ?(
+                  <>
                 <Image
                   source={{ uri: baseUrl + "images/author.png" }}
                   style={styles.ImageStyle}
@@ -202,7 +209,23 @@ class Dishdetail extends Component {
                   placeholder="Author :"
                   onChangeText={this.handleAuthorInput}
                   underlineColorAndroid="transparent"
+                  value={this.props.login.user.name}
                 />
+                </>
+                ) : (
+                  <>
+                  <Image
+                  source={{ uri: baseUrl + "images/author.png" }}
+                  style={styles.ImageStyle}
+                  />
+                <TextInput
+                  style={{ flex: 1 }}
+                  placeholder="Author :"
+                  editable={false} selectTextOnFocus={false}
+                  underlineColorAndroid="transparent"
+                />
+                </>
+                )}
               </View>
               <View style={styles.SectionStyle}>
                 <Image
@@ -274,15 +297,21 @@ class Dishdetail extends Component {
 
   handleComment() {
     const { rating, author, comment } = this.state;
-    const dishId = parseInt(this.props.route.params.productId);
+    const productId = parseInt(this.props.route.params.productId);
 
     this.toggleModal();
     this.props.postComment(productId, rating, author, comment);
   }
 
   markFavorite(productId) {
-    alert("Added to your card")
+    if ( this.props.login.isLoggedIn)
+    {
+    alert("Added to your card ")
     this.props.postFavorite(productId);
+    }
+    else {
+      alert("Please login before using this service")
+    }
   }
 }
 

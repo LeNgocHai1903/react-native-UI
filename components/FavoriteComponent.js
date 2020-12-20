@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { FlatList, Text, Alert } from "react-native";
-import { ListItem, Avatar } from "react-native-elements";
+import { FlatList, Text, Alert, Button,View } from "react-native";
+import { ListItem, Avatar, Image } from "react-native-elements";
 import Loading from "./LoadingComponent";
 import { baseUrl } from "../shared/baseUrl";
 import { connect } from "react-redux";
@@ -18,21 +18,41 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class Favorites extends Component {
+  deleteAll() {
+    this.props.deleteAll()
+  }
   render() {
+    
     if (this.props.products.isLoading) {
       return <Loading />;
     } else if (this.props.products.errMess) {
       return <Text>{this.props.products.errMess}</Text>;
+    } else if(this.props.favorites.length === 0) {
+      return (
+        <View style={{ justifyContent: "center", marginTop: 50 }}>
+           <Image
+                  source={require('../assets/5.png')}
+                  style={{ padding: 10,
+                    margin: 60,
+                    height: 300,
+                    width: 300,
+                    resizeMode: "stretch",
+                    alignItems: "center",}}
+                />
+      </View>
+      )
     } else {
       const products = this.props.products.products.filter((p) =>
         this.props.favorites.some((el) => el === p.id)
       );
       return (
+        <>
         <FlatList
           data={products}
           renderItem={({ item, index }) => this.renderMenuItem(item, index)}
           keyExtractor={(item) => item.id.toString()}
         />
+        </>
       );
     }
   }
@@ -63,6 +83,7 @@ class Favorites extends Component {
       },
     ];
     const { navigate } = this.props.navigation;
+
     return (
       <Swipeout right={rightButton} autoClose={true}>
         <Animatable.View animation="fadeInRightBig" duration={2000}>
@@ -76,6 +97,7 @@ class Favorites extends Component {
               <ListItem.Subtitle>{item.ingredients}</ListItem.Subtitle>
             </ListItem.Content>
           </ListItem>
+          
         </Animatable.View>
       </Swipeout>
     );

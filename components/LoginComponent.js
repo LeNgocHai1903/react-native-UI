@@ -1,63 +1,50 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { View, Button } from 'react-native';
 import { Input, CheckBox } from 'react-native-elements';
 import * as SecureStore from 'expo-secure-store';
+import { login } from '../redux/ActionCreators';
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: '',
-      password: '',
-      remember: false
-    }
+const mapDispatchToProps = (dispatch) => ({
+  login : (name, password) => dispatch(login(name,password))
+  
+});
+class Login extends Component   {
+  state = {
+    name:'',
+    password:'',
   }
-  render() {
+  
+  
+
+  render(){
     return (
       <View style={{ justifyContent: 'center', margin: 20 }}>
         <Input
           placeholder='Username'
           leftIcon={{ name: 'user-o', type: 'font-awesome' }}
-          value={this.state.username}
-          onChangeText={(username) => this.setState({ username })} />
+          value={this.state.name}
+          onChangeText={(u) => this.setState( {name: u.toLowerCase()})} />
         <Input
           placeholder='Password'
           leftIcon={{ name: 'key', type: 'font-awesome' }}
           value={this.state.password}
-          onChangeText={(password) => this.setState({ password })} />
+          secureTextEntry={true}
+          onChangeText={(p) => this.setState({ password: p.toLowerCase() })} />
         <CheckBox containerStyle={{ backgroundColor: null }}
-          title='Remember Me' center
-          checked={this.state.remember}
-          onPress={() => this.setState({ remember: !this.state.remember })} />
+          title='Remember Me' center />
         <View style={{ marginTop: 20 }}>
-          <Button title='Login' color='#7cc' onPress={() => this.handleLogin()} />
+          <Button title='Login' color='#7cc' onPress={() => this.login(this.state.name,this.state.password) } />
         </View>
       </View>
     );
   }
-  componentDidMount() {
-    SecureStore.getItemAsync('userinfo')
-      .then((userdata) => {
-        let userinfo = JSON.parse(userdata);
-        if (userinfo) {
-          this.setState({ username: userinfo.username });
-          this.setState({ password: userinfo.password });
-          this.setState({ remember: true })
-        }
-      });
-  }
-  handleLogin() {
-    if (this.state.remember) {
-      SecureStore
-        .setItemAsync('userinfo', JSON.stringify({ username: this.state.username, password: this.state.password }))
-        .catch((error) => alert('Could not save user info', error));
-      alert('Remembered user!');
-    } else {
-      SecureStore
-        .deleteItemAsync('userinfo')
-        .catch((error) => alert('Could not delete user info', error));
-      alert('Forgotten user!');
-    }
-  }
+
+  login(name, password) {
+    this.props.login(name,password);
 }
-export default Login;
+};
+
+
+
+export default connect(null,mapDispatchToProps)(Login);

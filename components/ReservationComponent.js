@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
 import {
   StyleSheet,
   View,
@@ -7,15 +8,27 @@ import {
   Switch,
   Button,
   Modal,
-  Alert
+  Alert,
 } from "react-native";
 import { Icon } from "react-native-elements";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { format } from "date-fns";
 import * as Animatable from "react-native-animatable";
-import * as Permissions from 'expo-permissions';
-import * as Notifications from 'expo-notifications';
+import * as Permissions from "expo-permissions";
+import * as Notifications from "expo-notifications";
+import { bill } from "../redux/ActionCreators";
+
+const mapDispatchToProps = (dispatch) => ({
+  confirmBill: (guests, smoking, date, userId) =>
+    dispatch(bill(guests, smoking, date, userId)),
+});
+
+const mapStateToProps = (state) => {
+  return {
+    login: state.login,
+  };
+};
 
 class Reservation extends Component {
   constructor(props) {
@@ -79,7 +92,7 @@ class Reservation extends Component {
           <View style={styles.formRow}>
             <Button
               title="Reserve"
-              color="#7cc"
+              color="#8ED1FC"
               onPress={() => this.handleReservation()}
             />
           </View>
@@ -88,7 +101,7 @@ class Reservation extends Component {
             visible={this.state.showModal}
             onRequestClose={() => this.setState({ showModal: false })}
           > */}
-            {/* <View style={styles.modal}>
+          {/* <View style={styles.modal}>
               <Text style={styles.modalTitle}>Your Reservation</Text>
               <Text style={styles.modalText}>
                 Number of Guests: {this.state.guests}
@@ -116,39 +129,52 @@ class Reservation extends Component {
 
   handleReservation() {
     // this.setState({ showModal: true });
-    Alert.alert(
-      "Your Reservation OK?",
-      "Number of Guests:" +
-        this.state.guests +
-        "\nSmoking? " +
-        this.state.smoking +
-        "\nDate and time:" +
-        this.state.date,
-      [
-        {
-          text: "Cancel",
-          onPress: () => {
-            this.resetForm();
-          },
-        },
-        {
-          text: "OK",
-          onPress: () => {
-            this.presentLocalNotification(this.state.date);
-            // this.addReservationToCalendar(this.state.date);
-            this.resetForm();
-          },
-        },
-      ],
-      { cancelable: false }
-    );
+    {
+      this.props.login.isLoggedIn
+        ? Alert.alert(
+            "Your Reservation OK?",
+            "Number of Guests:" +
+              this.state.guests +
+              "\nSmoking? " +
+              this.state.smoking +
+              "\nDate and time:" +
+              this.state.date,
+            [
+              {
+                text: "Cancel",
+                onPress: () => {
+                  this.resetForm();
+                },
+              },
+              {
+                text: "OK",
+                onPress: () => {
+                  this.presentLocalNotification(this.state.date);
+                  this.props.confirmBill(
+                    this.state.guests,
+                    this.state.smoking,
+                    this.state.date,
+                    this.props.login.user.id
+                  );
+                  this.resetForm();
+                },
+              },
+            ],
+            { cancelable: false }
+          )
+        : Alert.alert("Please login before using this service");
+    }
   }
   async obtainNotificationPermission() {
-    let permission = await Permissions.getAsync(Permissions.USER_FACING_NOTIFICATIONS);
-    if (permission.status !== 'granted') {
-      permission = await Permissions.askAsync(Permissions.USER_FACING_NOTIFICATIONS);
-      if (permission.status !== 'granted') {
-        Alert.alert('Permission not granted to show notifications');
+    let permission = await Permissions.getAsync(
+      Permissions.USER_FACING_NOTIFICATIONS
+    );
+    if (permission.status !== "granted") {
+      permission = await Permissions.askAsync(
+        Permissions.USER_FACING_NOTIFICATIONS
+      );
+      if (permission.status !== "granted") {
+        Alert.alert("Permission not granted to show notifications");
       }
     }
     return permission;
@@ -156,17 +182,25 @@ class Reservation extends Component {
   async presentLocalNotification(date) {
     await this.obtainNotificationPermission();
     Notifications.setNotificationHandler({
-      handleNotification: async () => ({ shouldShowAlert: true, shouldPlaySound: true, shouldSetBadge: true })
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
     });
     Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Your Reservation',
-        body: 'Reservation for ' + date + ' requested',
+        title: "Your Reservation",
+        body: "Reservation for " + date + " requested",
         sound: true,
-        vibrate: true
+        vibrate: true,
       },
-      trigger: null
+      trigger: null,
     });
+  }
+
+  confirmBill(guests, smoking, date, userId) {
+    this.props.confirmBill(guests, smoking, date, userId);
   }
 
   resetForm() {
@@ -179,7 +213,7 @@ class Reservation extends Component {
     });
   }
 }
-export default Reservation;
+export default connect(mapStateToProps, mapDispatchToProps)(Reservation);
 
 const styles = StyleSheet.create({
   formRow: {
@@ -203,7 +237,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    backgroundColor: "#7cc",
+    backgroundColor: "#000000",
     textAlign: "center",
     color: "white",
     marginBottom: 20,

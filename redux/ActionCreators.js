@@ -1,5 +1,8 @@
 import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl';
+import {loginUrl} from  '../shared/loginUrl';
+import {reserUrl} from '../shared/reserve-table'
+import { Alert } from 'react-native';
 
 // leaders
 export const fetchLeaders = () => (dispatch) => {
@@ -93,38 +96,6 @@ export const addComments = (comments) => ({
   payload: comments
 });
 
-// promotions
-// export const fetchPromos = () => (dispatch) => {
-//   dispatch(promosLoading());
-//   return fetch(baseUrl + 'promotions')
-//     .then(response => {
-//       if (response.ok) {
-//         return response;
-//       } else {
-//         var error = new Error('Error ' + response.status + ': ' + response.statusText);
-//         error.response = response;
-//         throw error;
-//       }
-//     }, error => {
-//       var errmess = new Error(error.message);
-//       throw errmess;
-//     })
-//     .then(response => response.json())
-//     .then(promos => dispatch(addPromos(promos)))
-//     .catch(error => dispatch(promosFailed(error.message)));
-// };
-// export const promosLoading = () => ({
-//   type: ActionTypes.PROMOS_LOADING
-// });
-// export const promosFailed = (errmess) => ({
-//   type: ActionTypes.PROMOS_FAILED,
-//   payload: errmess
-// });
-// export const addPromos = (promos) => ({
-//   type: ActionTypes.ADD_PROMOS,
-//   payload: promos
-// });
-
 // favorites
 export const postFavorite = (productId) => (dispatch) => {
   setTimeout(() => {
@@ -140,6 +111,7 @@ export const deleteFavorite = (productId) => ({
   type: ActionTypes.DELETE_FAVORITE,
   payload: productId
 });
+
 
 // comment
 export const addComment = (comment) => ({
@@ -160,3 +132,105 @@ export const postComment = (productId, rating, author, comment) => (dispatch) =>
       dispatch(addComment(newComment));
   }, 2000);
 };
+
+//User
+
+
+//login
+export const login =  (name, password) => {
+  // const { username, password } = loginInput;
+  return (dispatch) => { // don't forget to use dispatch here!
+    return fetch(loginUrl + 'login', {
+      method: 'POST',
+      headers: {  // these could be different for your API call
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"name": name, "password": password}),
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.message === 'Đã đăng nhập') { // response success checking logic could differ
+          dispatch(setLoginState({ ...json, userId: name })); // our action is called here
+          Alert.alert('Sucess')
+        } else {
+          Alert.alert('Login Failed', 'Username or Password is incorrect');
+        }
+      })
+      .catch((err) => {
+        Alert.alert('Login Failed', 'Some error occured, please retry');
+        console.log(err);
+      });
+  };
+};
+
+export const setLoginState = (loginData) => {
+  return {
+    type: ActionTypes.SET_LOGIN_STATE,
+    payload: loginData,
+  };
+};
+
+export const setLogoutState = () => {
+  return {
+    type: ActionTypes.SET_LOGOUT_STATE,
+    payload: {
+      login: false
+    },
+  };
+};
+
+//register
+
+//login
+export const register =  (name, password, email) => {
+  // const { username, password } = loginInput;
+  return (dispatch) => { // don't forget to use dispatch here!
+    return fetch(loginUrl + 'signup', {
+      method: 'POST',
+      headers: {  // these could be different for your API call
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"name": name, "password": password, "email": email}),
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.message === 'Đăng kí thành công') { // response success checking logic could differ
+          // dispatch(setLoginState({ ...json, userId: name })); // our action is called here
+          Alert.alert('Registed')
+        } else {
+          Alert.alert('Login Failed', 'Username or Password is incorrect');
+        }
+      })
+      
+  };
+};
+
+//ReserveTable
+
+export const bill =  (guests, smoking,date,userId) => {
+  // const { username, password } = loginInput;
+  return (dispatch) => { // don't forget to use dispatch here!
+    return fetch(reserUrl  + userId  , {
+      method: 'POST',
+      headers: {  // these could be different for your API call
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({"numberofguest": guests, "creator": userId,  "smoking": smoking, "date": date}),
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.message === 'Đặt bàn thành công') { // response success checking logic could differ
+          // dispatch(setLoginState({ ...json, userId: name })); // our action is called here
+          Alert.alert('Đã đặt bàn thành công')
+        } else {
+          Alert.alert('Login Failed', 'Username or Password is incorrect');
+        }
+      })
+      
+  };
+};
+
+

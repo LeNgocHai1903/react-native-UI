@@ -1,1 +1,1 @@
-export const baseUrl = 'https://react-native-bar.herokuapp.com/';
+export const baseUrl = 'http://react-native-bar.herokuapp.com/';

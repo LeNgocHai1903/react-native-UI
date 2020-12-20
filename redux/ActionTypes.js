@@ -18,5 +18,20 @@ export const COMMENTS_FAILED = 'COMMENTS_FAILED';
 export const POST_FAVORITE = 'POST_FAVORITE';
 export const ADD_FAVORITE = 'ADD_FAVORITE';
 export const DELETE_FAVORITE = 'DELETE_FAVORITE';
+export const DELETE_ALL_FAVORITE = 'DELETE_ALL_FAVORITE';
 //comment
 export const ADD_COMMENT = 'ADD_COMMENT';
+
+
+//login
+
+export const SET_LOGIN_STATE = "SET_LOGIN_STATE"
+export const SET_LOGOUT_STATE = "SET_LOGOUT_STATE"
+
+//register
+
+export const SET_REGISTER_STATE = "SET_REGISTER_STATE"
+
+//ReserveTable
+
+export const SET_RESERVETABLE = 'SET_RESERVETABLE'

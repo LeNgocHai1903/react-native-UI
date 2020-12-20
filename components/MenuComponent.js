@@ -33,7 +33,7 @@ class Menu extends Component {
     return (
       <Animatable.View animation="fadeInRightBig" duration={2000}>
       <ListItem key={index} onPress={() => navigate('Productdetail', { productId: item.id })}>
-        <Avatar source={{ uri: baseUrl + item.image }} />
+        <Avatar source={{ uri: baseUrl + item.image }} style={{height:70, width:60}} />
         <ListItem.Content>
           <ListItem.Title>{item.name}</ListItem.Title>
           <ListItem.Subtitle style={{color:"red"}}>{item.price} $</ListItem.Subtitle>
@@ -42,9 +42,10 @@ class Menu extends Component {
         <Icon
               raised
               reverse
-              name={this.props.favorite ? "shopping-cart" : "shopping-cart"}
+              name= "plus-circle" 
               type="font-awesome"
               color="#f50"
+              
               // onPress={() =>
               //   this.props.favorite ? alert("Already favorite") : props.onPress()
               // }
