@@ -76,7 +76,7 @@ class RenderDish extends Component {
             source={{ uri: baseUrl + product.image }}
             style={{
               width: "100%",
-              height: 100,
+              height: 300,
               flexGrow: 1,
               alignItems: "center",
               justifyContent: "center",

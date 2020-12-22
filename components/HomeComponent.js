@@ -57,7 +57,7 @@ class Home extends Component {
             source={require("../assets/pub.jpg")}
             style={{
               width: "100%",
-              height: 620,
+              height: 680,
               flexGrow: 1,
               alignItems: "center",
               justifyContent: "center",

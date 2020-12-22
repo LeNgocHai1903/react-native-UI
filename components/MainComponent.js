@@ -42,6 +42,9 @@ import Reservation from "./ReservationComponent";
 import Logout from "./LogoutComponent";
 import Favorites from "./FavoriteComponent";
 import { baseUrl } from "../shared/baseUrl";
+import ShoppingCartIcon from "./ShoppingCartIcon";
+
+const ShoppingCartIconNavigator = createStackNavigator();
 
 const TabNavigator = createBottomTabNavigator();
 function TabNavigatorScreen() {
@@ -302,7 +305,7 @@ function MenuNavigatorScreen() {
       <MenuNavigator.Screen
         name="Productdetail"
         component={ProductDetail}
-        options={{
+        navigationOptions={{
           headerTitle: "Productdetail",
         }}
       />
@@ -412,6 +415,7 @@ class MainNavigatorScreen extends Component {
     return (
       <MainNavigator.Navigator
         initialRouteName="Home"
+        screenOptions={{ headerShown: false }}
         drawerContent={(props) => <CustomDrawerContent {...props} />}
       >
         <MainNavigator.Screen
@@ -505,7 +509,7 @@ class MainNavigatorScreen extends Component {
               }}
             />
             <MainNavigator.Screen
-              name={`Welcome ${this.props.login.userId}`}
+              name={` ${this.props.login.userId}'s Shopping Cart`}
               component={FavoritesNavigatorScreen}
               options={{
                 headerShown: false,
@@ -600,6 +604,7 @@ class Main extends Component {
     return (
       <NavigationContainer>
         <MainNavigatorScreen login={this.props.login} />
+        {this.props.login.isLoggedIn ? (<ShoppingCartIcon />) : <></>}
       </NavigationContainer>
     );
   }

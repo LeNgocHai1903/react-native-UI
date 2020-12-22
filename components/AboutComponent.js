@@ -72,7 +72,7 @@ class RenderLeadership extends Component {
 
   renderLeaderItem(item, index) {
     return (
-      <ListItem key={index}>
+      <ListItem key={index}> 
         <Avatar rounded source={{ uri: baseUrl + item.image }} />
         <ListItem.Content>
           <ListItem.Title style={{ fontWeight: "bold" }}>

@@ -42,6 +42,7 @@
     "react-native-swipeout": "git+https://github.com/krakz999/react-native-swipeout.git",
     "react-native-web": "~0.13.7",
     "react-redux": "^7.2.1",
+    "react-router-native": "^5.2.0",
     "redux": "^4.0.5",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",

@@ -18,9 +18,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class Favorites extends Component {
-  deleteAll() {
-    this.props.deleteAll()
-  }
+
   render() {
     
     if (this.props.products.isLoading) {
@@ -91,14 +89,15 @@ class Favorites extends Component {
             key={index}
             onPress={() => navigate("Productdetail", { productId: item.id })}
           >
-            <Avatar source={{ uri: baseUrl + item.image }} />
+            <Avatar source={{ uri: baseUrl + item.image }} style={{ height: 70, width: 60 }} />
             <ListItem.Content>
-              <ListItem.Title>{item.name}</ListItem.Title>
-              <ListItem.Subtitle>{item.ingredients}</ListItem.Subtitle>
+              <ListItem.Title style={{color:"red"}}>{item.name}</ListItem.Title>
+              <ListItem.Subtitle>{item.price} $</ListItem.Subtitle>
             </ListItem.Content>
           </ListItem>
           
         </Animatable.View>
+
       </Swipeout>
     );
   }
